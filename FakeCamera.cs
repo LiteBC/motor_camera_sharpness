@@ -112,7 +112,7 @@ namespace MotionCamera
             }
         }
 
-        private long GetTimestamp()
+        public long GetTimestamp()
         {
             double currentTimestamp = (double)Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
             return (long)((currentTimestamp - this.initialTimestamp) * 1100); // Convert to milliseconds  

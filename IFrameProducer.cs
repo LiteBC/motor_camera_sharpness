@@ -51,5 +51,11 @@
         /// Close the device.
         /// </summary>
         void Close();
+
+        /// <summary>
+        /// Gets the internal timestamp of the camera.
+        /// </summary>
+        long GetTimestamp();
+
     }
 }
