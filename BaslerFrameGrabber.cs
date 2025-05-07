@@ -167,6 +167,7 @@ namespace BaslerCamera
             this.lastFrameStopwatch.Start();
 
             this.ContinuousShot();
+            this.grabbing = true;
             return true;
         }
 
@@ -432,7 +433,6 @@ namespace BaslerCamera
                     var timestamp = (double)Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
                     var clone = (grabResult.PixelData as byte[]).Clone() as byte[];
 
-                    this.LogicLogger.Trace($"WIDE image grabbed at {timestamp}.");
                     var height = grabResult.Height;
                     var width = grabResult.Width;
                     byte[,] reshapedClone = new byte[height, width];
@@ -441,6 +441,7 @@ namespace BaslerCamera
                     Buffer.BlockCopy(clone, 0, reshapedClone, 0, random.Next(100) == 0 ? 0 : clone.Length);
 
                     this.processQueue.Add(new FrameProducedEventArgs((long)(timestamp*1000), height, width, reshapedClone));
+                    Console.WriteLine($"Queue length: {this.processQueue.Count}");
                 }
             }
             catch (Exception exception)

@@ -18,8 +18,16 @@
   <ItemGroup>
   <PackageReference Include="NLog" Version="5.4.0" />
   <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  <PackageReference Include="System.Management" Version="9.0.4" />
 </ItemGroup>
   
+    <ItemGroup>
+    <ContentWithTargetPath Include="PiMotorController\Lib\PI_GCS2_DLL_x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>PI_GCS2_DLL_x64.dll</TargetPath>
+    </ContentWithTargetPath>
+	</ItemGroup>
+
   <ItemGroup>
     <Reference Include="Basler.Pylon">
       <HintPath>..\..\Program Files\Basler\pylon 6\Development\Assemblies\Basler.Pylon\x64\Basler.Pylon.dll</HintPath>
