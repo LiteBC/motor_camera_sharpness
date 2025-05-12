@@ -430,14 +430,6 @@
             return actualPosition;
         }
 
-        public long Now()
-        {
-            // Get the current timestamp in milliseconds
-            // Stopwatch is used to get a high-resolution timestamp
-            // and convert it to seconds by dividing by the frequency
-            return Stopwatch.GetTimestamp() * 1000 / Stopwatch.Frequency;
-        }
-
         private void PrintErrorMessage(GCSCommandError e)
         {
             if (this.controllerID > 0)
@@ -494,7 +486,7 @@
             {
                 throw new GCSCommandError("qPOS() failed");
             }
-            return new PositionProducedEventArgs(this.Now(), position[0]);
+            return new PositionProducedEventArgs(Utils.Now(), position[0]);
         }
 
     }

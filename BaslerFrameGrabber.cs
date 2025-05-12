@@ -22,13 +22,15 @@ namespace BaslerCamera
         public Logger LogicLogger = NLog.LogManager.GetCurrentClassLogger();
 
         private const double DefaultExposure = 200;
+        private const int BatchSize = 30;
         private const double DefaultGain = 1;
         private readonly Stopwatch lastFrameStopwatch = new Stopwatch();
         private readonly BlockingCollection<FrameProducedEventArgs> processQueue = new BlockingCollection<FrameProducedEventArgs>();
         private readonly Random random = new Random();
         private readonly Thread queueThread;
         private readonly CancellationTokenSource cancellationSourceThread;
-
+        private int bufCounter = 0;
+        private int buffCounterModulo = 0;
         private bool grabbing;
 
         /// <summary>
@@ -430,7 +432,6 @@ namespace BaslerCamera
                 IGrabResult grabResult = e.GrabResult;
                 if (grabResult.GrabSucceeded)
                 {
-                    var timestamp = (double)Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
                     var clone = (grabResult.PixelData as byte[]).Clone() as byte[];
 
                     var height = grabResult.Height;
@@ -438,10 +439,18 @@ namespace BaslerCamera
                     byte[,] reshapedClone = new byte[height, width];
 
                     // Copy the buffer directly into the 2D array
-                    Buffer.BlockCopy(clone, 0, reshapedClone, 0, random.Next(100) == 0 ? 0 : clone.Length);
+                    if (bufCounter % BatchSize == 0)
+                    {
+                        buffCounterModulo++;
+                        Buffer.BlockCopy(clone, 0, reshapedClone, 0, 0);
+                    }
+                    else
+                    {
+                        Buffer.BlockCopy(clone, 0, reshapedClone, 0, clone.Length);
+                    }
 
-                    this.processQueue.Add(new FrameProducedEventArgs((long)(timestamp*1000), height, width, reshapedClone));
-                    Console.WriteLine($"Queue length: {this.processQueue.Count}");
+                    this.processQueue.Add(new FrameProducedEventArgs(Utils.Now(), height, width, reshapedClone));
+                    // Console.WriteLine($"Queue length: {this.processQueue.Count}");
                 }
             }
             catch (Exception exception)

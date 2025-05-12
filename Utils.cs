@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -13,6 +14,16 @@ namespace MotionCamera
     internal class Utils
     {
 
+        /// <summary>
+        /// Get the current timestamp in milliseconds
+        // Stopwatch is used to get a high-resolution timestamp
+        // and convert it to seconds by dividing by the frequency
+        /// </summary>
+        /// <returns>timestamp in ms.</returns>
+        public static long Now()
+        {
+            return Stopwatch.GetTimestamp() * 1000 / Stopwatch.Frequency;
+        }
         public static double EstimateSharpness(FrameProducedEventArgs frame)
         {
             int height = frame.Height;

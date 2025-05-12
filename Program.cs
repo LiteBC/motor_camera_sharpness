@@ -7,9 +7,12 @@ class Program
     [STAThread]
     static void Main(string[] args)
     {
+        double startPosition = 0.0; // mm
+        double targetPosition = 5.0; // mm
+        double speed = 1.0; // mm
         IMotorController motor = new PiMotorController.PiMotorController("COM3");
         motor.Connect();
-        motor.MoveAbsolute(0.0, 1.0, true);
+        motor.MoveAbsolute(startPosition, speed, true);
         
         IFrameProducer camera = new BaslerCamera.BaslerFrameGrabber();
         camera.InitializeCamera();
@@ -28,13 +31,13 @@ class Program
             tuples.Add((e, 0, score));
         };  
 
-        motor.MoveAbsolute(3.0, 1.0, false);
+        motor.MoveAbsolute(targetPosition, speed, false);
 
         Console.WriteLine("Starting motor movement...");
 
         PositionProducedEventArgs position = motor.GetPosition();
 
-        while (position.Position < 3.0)
+        while (position.Position < targetPosition)
         {
             Console.WriteLine($"Current Position: {position.Position:F2} mm, t={position.Timestamp}");
             Thread.Sleep(100); // 100ms delay
@@ -50,6 +53,6 @@ class Program
 
         Console.WriteLine($"Best frame: {bestTuple.frame.Timestamp}, Position: {bestTuple.position}, Score: {bestTuple.score}");
 
-        motor.MoveAbsolute(bestTuple.position, 1.0, true);
+        motor.MoveAbsolute(bestTuple.position, speed, true);
     }
 }
